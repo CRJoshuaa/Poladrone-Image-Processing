@@ -57,6 +57,14 @@ class RenamePage(tk.Frame):
     def browseFiles(self):
         self.renameImagePath = filedialog.askdirectory(initialdir = "/",
                                               title = "Select a File")
+        try:
+            if not any(fname.endswith('.JPG') for fname in os.listdir(self.renameImagePath)):
+                raise Exception("Directory has no .jpeg files")
+
+        except Exception:
+            messagebox.showerror("Select A Directory","JPG files(s) not found")
+            return
+
 
         label_rename_folder.configure(text="File Opened: "+self.renameImagePath,fg='blue')
         label_progress_rename.configure(text='Standby',fg='orange')

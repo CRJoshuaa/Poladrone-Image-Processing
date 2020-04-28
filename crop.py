@@ -22,6 +22,7 @@ class CropPage(tk.Frame):
         global label_progress_bar
         global progress_bar
         global entry_crop_length
+        global label_cropped_width
         global entry_crop_width
 
         global dimensionLock
@@ -47,7 +48,7 @@ class CropPage(tk.Frame):
                                     text="Browse",
                                     command=lambda:self.browseFiles(label_cropped_folder))
 
-        check_dimension_lock=Checkbutton(self,text="Square Crop",variable=dimensionLock)
+        check_dimension_lock=Checkbutton(self,text="Square Crop",variable=dimensionLock,command=self.checkLabel)
 
         label_cropped_length=Label(self,text="Cropped Length")
         entry_crop_length=Entry(self,width=5,borderwidth=2)
@@ -64,7 +65,7 @@ class CropPage(tk.Frame):
 
 
         button_crop_execute=ttk.Button(self,
-                                    text="EXECUTE",
+                                    text="Crop",
                                     command=self.cropFunction)
 
 
@@ -88,10 +89,26 @@ class CropPage(tk.Frame):
 
         button_crop_execute.grid(column=1,row=10)
 
+    def checkLabel(self):
+        if(dimensionLock.get()):
+            label_cropped_width.config(state='disable')
+            entry_crop_width.config(state='disable')
+        else:
+            label_cropped_width.config(state='active')
+            entry_crop_width.config(state='normal')
 
     def browseFiles(self,label):
         directory=filedialog.askdirectory(initialdir='/',title="Select a directory")
         if label==label_raw_folder:
+            #try block for RAW folder with no jpeg
+            try:
+                if not any(fname.endswith('.JPG') for fname in os.listdir(directory)):
+                    raise Exception("Directory has no .jpeg files")
+
+            except Exception:
+                messagebox.showerror("Select A Directory","JPG files(s) not found")
+                return
+
             label.configure(text="RAW Folder: "+ directory, fg='blue')
             self.path=directory
 
@@ -108,6 +125,11 @@ class CropPage(tk.Frame):
 
 
     def cropFunction(self):
+        #default crop dimensions
+        cropLength=500
+        cropWidth=500
+
+
         #try block for RAW path
         try:
             print(self.path)
@@ -126,61 +148,55 @@ class CropPage(tk.Frame):
 
         #try block for cropped path
         try:
-            print(self.outPath)
+            #print(self.outPath)
             if (self.outPath==""):
                 raise Exception("Empty Cropped Directory")
         except AttributeError:
-            print("Empty Cropped directory")
+            #print("Empty Cropped directory")
             messagebox.showerror("Select A Directory","Empty Cropped Directory")
             return;
 
         except Exception:
-            print("Empty RAW Directory")
-            messagebox.showerror("Select A Directory","Empty RAW Directory")
+            #print("Empty RAW Directory")
+            messagebox.showerror("Select A Directory","Empty Cropped Directory")
             return;
-        #try block for crop dimension inputs
 
+
+        #try block for crop dimension inputs
         try:
-            if(int(entry_crop_length.get())>5000 or int(entry_crop_length.get())<0):
-                raise ValueOutOfRange("Value is out of range")
-            if(int(entry_crop_width.get())>3000 or int(entry_crop_width.get())<0):
-                raise ValueOutOfRange("Value is out of range")
+            if(dimensionLock.get()):
+                if(entry_crop_length.get()==""):
+                    print("Using default values for square crop")
+
+                else:
+                    if(int(entry_crop_length.get())>3000 or int(entry_crop_length.get())<0):
+                        raise ValueOutOfRange("Value is out of range")
+                    else:
+                        print("square crop")
+                        cropLength=int(entry_crop_length.get())//2
+                        cropWidth=int(entry_crop_length.get())//2
+
+            else:
+                if(entry_crop_width.get()=="" or entry_crop_length.get()=="" ):
+                    print("Using default vals for rectangle crop")
+                else:
+                    if(int(entry_crop_length.get())>5000 or int(entry_crop_length.get())<0):
+                        raise ValueOutOfRange("Value is out of range")
+                    elif(int(entry_crop_width.get())>3000 or int(entry_crop_width.get())<0):
+                        raise ValueOutOfRange("Value is out of range")
+                    else:
+                        print("rectangle crop")
+                        cropLength=int(entry_crop_length.get())//2
+                        cropWidth=int(entry_crop_width.get())//2
+
 
         except ValueOutOfRange:
             messagebox.showerror("Dimension Input","Values out of range")
-            return;
-        except ValueError:
-            messagebox.showerror("Dimension Input","Dimesions must be integers")
-            return;
-            #cropLength=500
-            #cropWidth=500
+            return
 
-        #default crop dimensions
-        cropLength=500
-        cropWidth=500
-
-        #tset progress label to processing
+        #set progress label to processing
         label_progress_bar.configure(text="PROCESSING ",
                                         fg='red')
-
-        #checking for empty values
-        if(dimensionLock.get()):
-            if(entry_crop_length.get()==""):
-                print("Using default values for square crop")
-
-            else:
-                print("square crop")
-                cropLength=int(entry_crop_length.get())//2
-                cropWidth=int(entry_crop_length.get())//2
-
-        else:
-            if(entry_crop_width.get()=="" or entry_crop_length.get()=="" ):
-                print("Using default vals for rectangle crop")
-            else:
-                print("rectangle crop")
-                cropLength=int(entry_crop_length.get())//2
-                cropWidth=int(entry_crop_width.get())//2
-
 
         #initializing progress bar
         progress_bar['value']=0
@@ -188,7 +204,6 @@ class CropPage(tk.Frame):
 
         # iterate through the names of contents of the folder
         for image_path in os.listdir(self.path):
-
 
             # create the full input path and read the file
             input_path = os.path.join(self.path, image_path)
@@ -222,6 +237,8 @@ class CropPage(tk.Frame):
             #update progress_bar
             progress_bar['value']+=1
             progress_bar.update()
+
+
 
 
         label_progress_bar.configure(text="DONE! ",fg='green')

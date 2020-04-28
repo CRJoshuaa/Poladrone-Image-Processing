@@ -70,6 +70,15 @@ class SelectPage(tk.Frame):
     def browseFiles(self,label):
         directory=filedialog.askdirectory(initialdir='/',title="Select a directory")
         if label==label_cropped_folder:
+            #try block for cropped directory
+            try:
+                if not any(fname.endswith('.JPG') for fname in os.listdir(directory)):
+                    raise Exception("Directory has no .jpeg files")
+
+            except Exception:
+                messagebox.showerror("Select A Directory","JPG files(s) not found")
+                return
+
             label.configure(text="Cropped Folder: "+ directory, fg='blue')
             self.croppedPath=directory
             #print("Raw: " + self.path)
