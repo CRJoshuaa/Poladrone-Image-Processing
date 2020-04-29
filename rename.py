@@ -8,26 +8,34 @@ from tkinter import messagebox
 class RenamePage(tk.Frame):
     def __init__(self,parent,controller):
         tk.Frame.__init__(self,parent)
-        label=tk.Label(self,text="Rename Page")
-        label.grid(column=0,row=0)
 
         global label_rename_folder
         global entry_image_set_name
         global progress_rename
         global label_progress_rename
 
+        font_page_title=('Helvetica',16,'bold')
+        font_label=("Verdana",10)
+
         renameImagePath=""
         imageSetName=""
 
-        # Create a File Explorer label
+        label=tk.Label(self,text="Rename Page",font=font_page_title)
+
+
         label_rename_folder = Label(self,
-                                    text = "Browse Selected Images",
-                                    width = 75, height = 4)
+                                    text = "Selected Image Directory",
+                                    width=55, height=4,
+                                    font=font_label,
+                                    wraplength=500,
+                                    justify='left',
+                                    anchor=W,
+                                    fg='grey')
         button_rename_explorer = ttk.Button(self,
-                                text = "Browse Files",
+                                text = "Browse",
                                 command = self.browseFiles)
 
-        label_image_set_name=Label(self,text='Image Set Name')
+        label_image_set_name=Label(self,text='Image Set Name: ',font=font_label)
         entry_image_set_name=Entry(self,width=40,borderwidth=2)
 
         label_progress_rename=Label(self,text="Standby",fg='orange')
@@ -37,19 +45,19 @@ class RenamePage(tk.Frame):
         button_rename_execute=ttk.Button(self,text="Rename", command=self.renameFunction)
 
 
+        label.grid(column=0,row=0)
+
+        label_rename_folder.grid(column = 1, row = 1,columnspan=10)
+        button_rename_explorer.grid(column = 12, row = 1)
+
+        label_image_set_name.grid(column = 1, row = 2)
+        entry_image_set_name.grid(column=2, row=2)
+
+        label_progress_rename.grid(column=1,row=3)
+        progress_rename.grid(column=1,row=4)
 
 
-        label_rename_folder.grid(column = 0, row = 1)
-        button_rename_explorer.grid(column = 1, row = 1)
-
-        label_image_set_name.grid(column = 0, row = 2)
-        entry_image_set_name.grid(column=1, row=2)
-
-        label_progress_rename.grid(column=0,row=3)
-        progress_rename.grid(column=0,row=4)
-
-
-        button_rename_execute.grid(column=1,row=5)
+        button_rename_execute.grid(column=10,row=5)
 
 
 

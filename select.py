@@ -13,8 +13,6 @@ class NthValueOutOfRange(Exception):
 class SelectPage(tk.Frame):
     def __init__(self,parent,controller):
         tk.Frame.__init__(self,parent)
-        label=tk.Label(self,text="Select Page")
-        label.grid(column=0,row=0)
 
         global label_cropped_folder
         global label_selected_folder
@@ -22,25 +20,41 @@ class SelectPage(tk.Frame):
         global progress_select
         global label_progress_select
 
+        font_page_title=('Helvetica',16,'bold')
+        font_label=("Verdana",10)
+
         croppedPath=""
         selectedPath=""
 
+        label=tk.Label(self,text="Select Page",font=font_page_title)
+
         label_cropped_folder=Label(self,
-                                text="Browse Cropped Image Location ",
-                                width=75, height=4)
+                                text="Cropped Image Directory ",
+                                width=55, height=4,
+                                font=font_label,
+                                wraplength=500,
+                                justify='left',
+                                anchor=W,
+                                fg='grey')
         button_cropped_explorer=ttk.Button(self,
                                     text="Browse",
                                     command=lambda:self.browseFiles(label_cropped_folder))
 
 
         label_selected_folder=Label(self,
-                                text="Browse Selected Image Location ",
-                                width=75, height=4)
+                                text="Selected Image Directory ",
+                                width=55, height=4,
+                                font=font_label,
+                                wraplength=500,
+                                justify='left',
+                                anchor=W,
+                                fg='grey')
         button_selected_explorer=ttk.Button(self,
                                     text="Browse",
                                     command=lambda:self.browseFiles(label_selected_folder))
 
-        label_nth_number=Label(self,text="Nth number")
+
+        label_nth_number=Label(self,text="Nth number: ",font=font_label)
         entry_nth_number=Entry(self,width=5,borderwidth=2)
 
         label_progress_select=Label(self,text="Standby",fg='orange')
@@ -49,22 +63,21 @@ class SelectPage(tk.Frame):
         button_select_execute=ttk.Button(self,text='Select',
                                             command=self.selectFunction)
 
+        label.grid(column=0,row=0)
 
+        label_cropped_folder.grid(sticky=W,column=1,row=1,columnspan=10)
+        button_cropped_explorer.grid(column=12,row=1)
 
+        label_selected_folder.grid(sticky=W,column=1,row=2,columnspan=10)
+        button_selected_explorer.grid(column=12,row=2)
 
-        label_cropped_folder.grid(sticky=W,column=0,row=1)
-        button_cropped_explorer.grid(column=1,row=1)
+        label_nth_number.grid(column=1,row=3,sticky=W)
+        entry_nth_number.grid(column=2,row=3)
 
-        label_selected_folder.grid(sticky=W,column=0,row=2)
-        button_selected_explorer.grid(column=1,row=2)
+        label_progress_select.grid(column=1,row=4)
+        progress_select.grid(column=1,row=5)
 
-        label_nth_number.grid(column=0,row=3)
-        entry_nth_number.grid(column=1,row=3)
-
-        label_progress_select.grid(column=0,row=4)
-        progress_select.grid(column=0,row=5)
-
-        button_select_execute.grid(column=1,row=6)
+        button_select_execute.grid(column=10,row=6)
 
 
     def browseFiles(self,label):
@@ -83,7 +96,7 @@ class SelectPage(tk.Frame):
             self.croppedPath=directory
             #print("Raw: " + self.path)
         else:
-            label.configure(text="Destination Folder: "+ directory, fg='blue')
+            label.configure(text="Selected Folder: "+ directory, fg='blue')
             self.selectedPath=directory
             #print("Cropped: " + self.outPath)
         label_progress_select.configure(text="Standby",fg='orange')

@@ -9,7 +9,11 @@ class ProcessApp(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
         tk.Tk.title(self,"Poladrone Image Processing Tool")
-        tk.Tk.geometry(self,"900x500")
+        tk.Tk.geometry(self,"700x350")
+
+        #appIcon=PhotoImage(self,file='poladroneLogo.ico')
+        #tk.Tk.iconbitmap(self,appIcon)
+
 
         #menu bar
         my_menu=Menu(self)

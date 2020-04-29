@@ -14,8 +14,8 @@ class ValueOutOfRange(Exception):
 class CropPage(tk.Frame):
     def __init__(self,parent,controller):
         tk.Frame.__init__(self,parent)
-        label=tk.Label(self,text="Crop Page")
-        label.grid(sticky='n')
+        #tk.Frame.config(self,bg='blue')
+
 
         global label_raw_folder
         global label_cropped_folder
@@ -27,33 +27,60 @@ class CropPage(tk.Frame):
 
         global dimensionLock
 
+        font_page_title=('Helvetica',16,'bold')
+        font_label=("Verdana",10)
 
         path=""
         outPath=""
         dimensionLock=BooleanVar()
 
+        label_crop_page=Label(self,text="Crop Page",font=font_page_title)
 
         label_raw_folder=Label(self,
-                                text="Browse Raw Image Location ",
-                                width=75, height=4)
+                                text="Raw Image Directory ",
+                                width=55, height=4,
+                                font=font_label,
+                                wraplength=500,
+                                justify='left',
+                                anchor=W,
+                                fg='grey')
+
         button_raw_explorer=ttk.Button(self,
-                                    text="Browse",
-                                    command=lambda:self.browseFiles(label_raw_folder))
+                                        text="Browse",
+                                        command=lambda:self.browseFiles(label_raw_folder))
 
 
         label_cropped_folder=Label(self,
-                                text="Browse Croppped Image Location ",
-                                width=75, height=4)
+                                    text="Cropped Image Directory ",
+                                    width=55, height=4,
+                                    font=font_label,
+                                    wraplength=500,
+                                    justify=LEFT,
+                                    anchor=W,
+                                    fg='grey')
+
         button_cropped_explorer=ttk.Button(self,
-                                    text="Browse",
-                                    command=lambda:self.browseFiles(label_cropped_folder))
+                                            text="Browse",
+                                            command=lambda:self.browseFiles(label_cropped_folder))
 
-        check_dimension_lock=Checkbutton(self,text="Square Crop",variable=dimensionLock,command=self.checkLabel)
+        check_dimension_lock=Checkbutton(self,
+                                            text="Square Crop",
+                                            font=font_label,
+                                            variable=dimensionLock,
+                                            command=self.checkLabel)
 
-        label_cropped_length=Label(self,text="Cropped Length")
+        label_cropped_length=Label(self,
+                                    text="Crop Length: ",
+                                    font=font_label,
+                                    justify=LEFT,
+                                    anchor=W)
         entry_crop_length=Entry(self,width=5,borderwidth=2)
 
-        label_cropped_width=Label(self,text="Cropped Width")
+        label_cropped_width=Label(self,
+                                    text="Crop Width: ",
+                                    font=font_label,
+                                    justify=LEFT,
+                                    anchor=W)
         entry_crop_width=Entry(self,width=5,borderwidth=2)
 
 
@@ -68,26 +95,27 @@ class CropPage(tk.Frame):
                                     text="Crop",
                                     command=self.cropFunction)
 
+        label_crop_page.grid(sticky='n')
 
-        label_raw_folder.grid(sticky=W,column=0,row=1)
-        button_raw_explorer.grid(column=1,row=1)
+        label_raw_folder.grid(sticky=W,column=1,row=1,columnspan=10)
+        button_raw_explorer.grid(column=12,row=1)
 
-        label_cropped_folder.grid(sticky=W,column=0,row=2)
-        button_cropped_explorer.grid(column=1,row=2)
+        label_cropped_folder.grid(sticky=W,column=1,row=2,columnspan=10)
+        button_cropped_explorer.grid(column=12,row=2)
 
-        check_dimension_lock.grid(sticky="nsew",column=0,row=3)
+        check_dimension_lock.grid(sticky=W,column=2,row=3,columnspan=5)
         check_dimension_lock.deselect()
 
-        label_cropped_length.grid(column=0,row=4)
-        entry_crop_length.grid(column=1,row=4,sticky=W)
+        label_cropped_length.grid(sticky=W,column=2,row=4)
+        entry_crop_length.grid(column=3,row=4,sticky=W)
 
-        label_cropped_width.grid(column=0,row=5)
-        entry_crop_width.grid(column=1,row=5,sticky=W)
+        label_cropped_width.grid(column=2,row=5,sticky=W)
+        entry_crop_width.grid(column=3,row=5,sticky=W)
 
-        label_progress_bar.grid(column=0,row=6)
-        progress_bar.grid(column=0,row=7)
+        label_progress_bar.grid(column=2,row=6)
+        progress_bar.grid(column=2,row=7)
 
-        button_crop_execute.grid(column=1,row=10)
+        button_crop_execute.grid(column=10,row=10)
 
     def checkLabel(self):
         if(dimensionLock.get()):
@@ -103,13 +131,14 @@ class CropPage(tk.Frame):
             #try block for RAW folder with no jpeg
             try:
                 if not any(fname.endswith('.JPG') for fname in os.listdir(directory)):
+                    label.configure(text="No Folder Selected "+ directory, fg='red')
                     raise Exception("Directory has no .jpeg files")
 
             except Exception:
                 messagebox.showerror("Select A Directory","JPG files(s) not found")
                 return
 
-            label.configure(text="RAW Folder: "+ directory, fg='blue')
+            label.configure(text="RAW Folder: ", fg='blue')
             self.path=directory
 
         else:
@@ -120,7 +149,7 @@ class CropPage(tk.Frame):
         label_progress_bar.configure(text="Standby",fg='orange')
 
         if (directory==""):
-            label.configure(text="No Folder Selected "+ directory, fg='red')
+            label.configure(text="No Folder Selected ", fg='red')
             raise Exception("Empty directory")
 
 
