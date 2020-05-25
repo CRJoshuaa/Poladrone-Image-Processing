@@ -55,7 +55,7 @@ class SelectPage(tk.Frame):
 
 
         label_nth_number=Label(self,text="Nth number: ",font=font_label)
-        entry_nth_number=Entry(self,width=5,borderwidth=2)
+        entry_nth_number=ttk.Entry(self,width=5)
 
         label_progress_select=Label(self,text="Standby",fg='orange')
         progress_select=ttk.Progressbar(self,orient='horizontal',length=100,mode='determinate')
@@ -94,17 +94,19 @@ class SelectPage(tk.Frame):
 
             label.configure(text="Cropped Folder: "+ directory, fg='blue')
             self.croppedPath=directory
-            #print("Raw: " + self.path)
         else:
             label.configure(text="Selected Folder: "+ directory, fg='blue')
             self.selectedPath=directory
-            #print("Cropped: " + self.outPath)
+
         label_progress_select.configure(text="Standby",fg='orange')
+        
+        if (directory==""):
+            label.configure(text="No Folder Selected ", fg='red')
+            raise Exception("Empty directory")
 
 
     def selectFunction(self):
         #try block for cropped image path
-
         try:
             print(self.croppedPath)
             if (self.croppedPath==""):
@@ -158,6 +160,10 @@ class SelectPage(tk.Frame):
         progress_select['maximum']=len(list)//nthNum
 
         for i in list[::nthNum]:
+            if not(i.endswith('.JPG')):
+                progress_select['value']+=1
+                progress_select.update()
+                continue
             shutil.copy(self.croppedPath+'/'+i,self.selectedPath)
             progress_select['value']+=1
             progress_select.update()

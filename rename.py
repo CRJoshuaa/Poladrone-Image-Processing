@@ -36,7 +36,7 @@ class RenamePage(tk.Frame):
                                 command = self.browseFiles)
 
         label_image_set_name=Label(self,text='Image Set Name: ',font=font_label)
-        entry_image_set_name=Entry(self,width=40,borderwidth=2)
+        entry_image_set_name=ttk.Entry(self,width=40)
 
         label_progress_rename=Label(self,text="Standby",fg='orange')
         progress_rename=ttk.Progressbar(self,orient='horizontal',length=100,mode='determinate')
@@ -109,7 +109,11 @@ class RenamePage(tk.Frame):
 
 
         for count,filename in enumerate(os.listdir(self.renameImagePath)):
-            dst=self.imageSetName+str("_"+'{:0>4}'.format(count))+".jpg"
+            if not(filename.endswith('.JPG')):
+                progress_rename['value']+=1
+                progress_rename.update()
+                continue
+            dst=self.imageSetName+str("_"+'{:0>4}'.format(count))+".JPG"
             src=self.renameImagePath+'/'+filename
             dst=self.renameImagePath+'/'+dst
 
